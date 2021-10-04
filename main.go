@@ -8,6 +8,9 @@ import (
 
 func main() {
 	folderPath := flag.String("folder", ".", "folder path")
+	flag.Parse()
+	log.Println("folder: " + *folderPath)
+
 	fs := http.FileServer(http.Dir(*folderPath))
 
 	http.Handle("/", fs)
