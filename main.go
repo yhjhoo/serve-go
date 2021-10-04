@@ -7,15 +7,19 @@ import (
 )
 
 func main() {
-	folderPath := flag.String("folder", ".", "folder path")
 	flag.Parse()
-	log.Println("folder: " + *folderPath)
+	args := flag.Args()
+	if len(args) == 0 {
+		args = append(args, ".")
+	}
+	log.Println("args: " + args[0])
+	folderPath := args[0]
 
-	fs := http.FileServer(http.Dir(*folderPath))
+	fs := http.FileServer(http.Dir(folderPath))
 
 	http.Handle("/", fs)
 
-	log.Println("listen on port 8888, folderPath:" + *folderPath)
+	log.Println("listen on port 8888, folder:" + folderPath)
 	log.Println("http://localhost:8888")
 
 	if err := http.ListenAndServe(":8888", nil); err != nil {
