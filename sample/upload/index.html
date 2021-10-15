@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    Static page
+
+    <input type="file" id="input"/>
+
+    <div>
+        <div id="dropzone" style="margin:30px; width:500px; height:300px; border:1px dotted grey;">Drag & drop your file here...</div>
+    </div>
+
+    <div id="fileContent"></div>
+
+    <script>
+        const inputElement = document.getElementById("input");
+        inputElement.addEventListener("change", handleFiles, false);
+        function handleFiles() {
+            const fileList = this.files; /* now you can work with the file list */
+        }
+    </script>
+
+    <script type="application/javascript">
+    
+        window.onload = function() {
+            const dropzone = document.getElementById("dropzone");
+            dropzone.ondragover = dropzone.ondragenter = function(event) {
+                event.stopPropagation();
+                event.preventDefault();
+                dropzone.style.background="grey";
+            }
+
+            dropzone.ondrop = function(event) {
+                dropzone.style.background="white";
+                event.stopPropagation();
+                event.preventDefault();
+
+                const filesArray = event.dataTransfer.files;
+                let fr = new FileReader();
+                fr.readAsText(filesArray[0]);
+                
+                fr.onload = function() {
+                    document.getElementById("fileContent").innerHTML = fr.result;
+                };
+            }
+        }
+    </script>
+</body>
+</html>
