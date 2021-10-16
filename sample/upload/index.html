@@ -18,13 +18,60 @@
     <script>
         const inputElement = document.getElementById("input");
         inputElement.addEventListener("change", handleFiles, false);
+        let slice_size = 300;
+        let fileReader = new FileReader();
+
         function handleFiles() {
-            const fileList = this.files; /* now you can work with the file list */
+            const fileList = this.files;
+            console.log(fileList.length);
+            let file = fileList[0];
+            uploadFilePart(file, 0);
         }
+
+        function uploadFilePart(file, start) {
+            let next_slice = start + slice_size + 1;
+            let blob = file.slice(start, next_slice);
+
+            fileReader.onloadend = function(event) {
+                if ( event.target.readyState !== FileReader.DONE ) {
+                    return;
+                }
+
+                let data = {
+                    "fileName": file.name,
+                    "content": event.target.result
+                };
+                postJson(data);
+                if (next_slice < file.size) {
+                    uploadFilePart(file, next_slice);
+                }
+            }
+
+            fileReader.readAsDataURL(blob);
+        }
+
+        function postJson(data) {
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+
+            var raw = JSON.stringify(data);
+
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+
+            fetch("/upload", requestOptions)
+                .then(response => response.text())
+                .then(result => console.log(result))
+                .catch(error => console.log('error', error));
+        }
+
     </script>
 
     <script type="application/javascript">
-    
         window.onload = function() {
             const dropzone = document.getElementById("dropzone");
             dropzone.ondragover = dropzone.ondragenter = function(event) {
