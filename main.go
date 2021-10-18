@@ -4,14 +4,17 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
 func main() {
+	var port = flag.Int("port", 8888, "port")
 	flag.Parse()
 	args := flag.Args()
 	if len(args) == 0 {
@@ -40,10 +43,10 @@ func main() {
 		file.Write(content)
 	})
 
-	log.Println("listen on port 8888, folder:" + folderPath)
-	log.Println("http://localhost:8888")
+	log.Println(fmt.Sprintf("listen on port %d, folder:%s", *port, folderPath))
+	log.Println(fmt.Sprintf("http://localhost:%d", *port))
 
-	if err := http.ListenAndServe(":8888", nil); err != nil {
+	if err := http.ListenAndServe(":"+strconv.Itoa(*port), nil); err != nil {
 		log.Fatal(err)
 	}
 }
