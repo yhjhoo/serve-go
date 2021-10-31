@@ -6,11 +6,24 @@ Inspired by npm serve, https://www.npmjs.com/package/serve
 However sometimes we don't have internet to download npm packages, golang application provided a way to do offline installation
 
 
+### build project
+```shell
+go build .
+
+# build for windows in linux
+env GOOS=windows GOARCH=amd64 go build
+```
+
 ### usage
 ```shell
-serve-go
 
 serve-go ./
+
+serve-go ./ -port 8080
+
+#help
+serve-go -h
+
 ```
 
 ### Installation
