@@ -7,10 +7,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -22,6 +25,7 @@ func main() {
 	}
 	log.Println("args: " + args[0])
 	folderPath := args[0]
+	randomPortIfInUse(port)
 
 	fs := http.FileServer(http.Dir(folderPath))
 
@@ -49,6 +53,24 @@ func main() {
 	if err := http.ListenAndServe(":"+strconv.Itoa(*port), nil); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func randomPortIfInUse(port *int) {
+	ln, err := net.Listen("tcp", ":"+strconv.Itoa(*port))
+	if err != nil {
+		fmt.Println("Port is in use: " + strconv.Itoa(*port))
+		*port = generatePortBetween(3000, 4000)
+		fmt.Println("Switch to port: " + strconv.Itoa(*port))
+
+		randomPortIfInUse(port)
+	} else {
+		ln.Close()
+	}
+}
+
+func generatePortBetween(min, max int) int {
+	rand.Seed(time.Now().Unix())
+	return rand.Intn(max-min) + min
 }
 
 type FilePart struct {
