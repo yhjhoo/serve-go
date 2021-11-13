@@ -22,7 +22,9 @@ serve-go ./
 serve-go ./ -port 8080
 
 #proxy sample configuration
-serve-go ./ -port 8080 -proxy "/api/,https://api.randomuser.me"
+serve-go ./ -port 8080 -proxy "/api/,https://api.randomuser.me,root"
+
+# root refer to browse without context
 
 # multiple proxy configuration
 serve-go ./ -port 8080 -proxy "/api/,https://api.randomuser.me" -proxy "/api/,https://api.randomuser.me"
