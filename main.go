@@ -44,7 +44,12 @@ func main() {
 		value := strings.Split(v, ",")
 		fmt.Println("proxy: " + value[0] + " -> " + value[1])
 
-		http.HandleFunc(value[0], proxyHandler(value[1]))
+		isRoot := false
+		if len(value) > 2 && value[2] == "root" {
+			isRoot = true
+		}
+		fmt.Println("is Root: " + strconv.FormatBool(isRoot))
+		http.HandleFunc(value[0], proxyHandler(value[1], isRoot))
 	}
 
 	if err := http.ListenAndServe(":"+strconv.Itoa(*port), nil); err != nil {
@@ -52,7 +57,7 @@ func main() {
 	}
 }
 
-func proxyHandler(target string) func(http.ResponseWriter, *http.Request) {
+func proxyHandler(target string, isRoot bool) func(http.ResponseWriter, *http.Request) {
 	return func(res http.ResponseWriter, req *http.Request) {
 		remote, _ := url.Parse(target)
 		proxy := httputil.NewSingleHostReverseProxy(remote)
@@ -62,7 +67,10 @@ func proxyHandler(target string) func(http.ResponseWriter, *http.Request) {
 		// req.Header.Set("X-Forwarded-Host", req.Header.Get("Host"))
 		req.Host = remote.Host
 
-		req.URL.Path = "/"
+		if isRoot {
+			req.URL.Path = "/"
+		}
+
 		print(req.URL.RawQuery)
 
 		proxy.ServeHTTP(res, req)
